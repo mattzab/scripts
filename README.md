@@ -12,3 +12,5 @@
 `curl https://raw.githubusercontent.com/mattzab/scripts/master/bash/CD-to-ISO.sh | bash`
 ## Copy Folder to Drive
 `curl https://raw.githubusercontent.com/mattzab/scripts/master/bash/Copy-Folder-To-Drive.sh | bash`
+## Install Wordpress
+`curl https://raw.githubusercontent.com/mattzab/scripts/master/bash/Install-Wordpress.sh | bash`
