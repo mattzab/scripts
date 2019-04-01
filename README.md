@@ -1,5 +1,5 @@
 # Terminal One Liners
-
+Triple click to copy/paste command.
 ## Crouton
 `curl https://raw.githubusercontent.com/mattzab/scripts/master/bash/crouton.sh | bash`
 ## Merge SWORD Modules
