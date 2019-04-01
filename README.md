@@ -14,3 +14,5 @@
 `curl https://raw.githubusercontent.com/mattzab/scripts/master/bash/Copy-Folder-To-Drive.sh | bash`
 ## Install Wordpress
 `curl https://raw.githubusercontent.com/mattzab/scripts/master/bash/Install-Wordpress.sh | bash`
+## Move Files To Directory Above
+`for d in ./*/ ; do (cd "$d" && mv * ..); done`
