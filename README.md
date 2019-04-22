@@ -16,3 +16,5 @@ Triple click to copy/paste command.
 `curl https://raw.githubusercontent.com/mattzab/scripts/master/bash/Install-Wordpress.sh | bash`
 ## Move Files To Directory Above
 `for d in ./*/ ; do (cd "$d" && mv * ..); done`
+## Mirror Website
+`wget -mkEpnp http://example.org`
