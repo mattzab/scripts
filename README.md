@@ -18,3 +18,11 @@ Triple click to copy/paste command.
 `for d in ./*/ ; do (cd "$d" && mv * ..); done`
 ## Mirror Website
 `wget -mkEpnp http://example.org`
+
+
+
+
+# REGEX
+## Match All Except
+`^(?!hello).*$`
+Will match all lines except ones beginning with `hello`
