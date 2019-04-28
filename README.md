@@ -24,5 +24,5 @@ Triple click to copy/paste command.
 
 # REGEX
 ## Match All Except
-`^(?!hello).*$`
-Will match all lines except ones beginning with `hello`
+`^(?!http).*$`
+Will match all lines except ones beginning with `http`
