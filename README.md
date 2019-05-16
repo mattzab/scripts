@@ -18,6 +18,8 @@ Triple click to copy/paste command.
 `for d in ./*/ ; do (cd "$d" && mv * ..); done`
 ## Mirror Website
 `wget -mkEpnp http://example.org`
+(Span Hosts Version)
+`wget -mkEpnpH http://example.org`
 
 
 
