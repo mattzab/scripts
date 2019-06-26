@@ -31,3 +31,5 @@ Triple click to copy/paste command.
 ## Match All Except
 `^(?!http).*$`
 Will match all lines except ones beginning with `http`
+`^(?!http).*$\n`
+Will match all "carriage return" lines, with the exception of ones beginning with `http`
