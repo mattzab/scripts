@@ -20,8 +20,8 @@ Triple click to copy/paste command.
 `wget -mkEpnp http://example.org`
 (Span Hosts Version)
 `wget -mkEpnpH http://example.org`
-## Install PlexGuideBlitz
-`sudo rm -rf /opt/plexguide && sudo rm -rf /opt/pgstage && sudo apt install curl -y && curl -s https://raw.githubusercontent.com/PGBlitz/Install/v8.5/install.sh | sudo -H sh`
+## Convert .ts files to .mp4
+`for d in ./* ; do (cd "$d"; for f in ./* ; do (ffmpeg -i "$f" -c copy "$f.mp4"); done; rm *.ts; rename 's/.ts//' *); done`
 
 
 
