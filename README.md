@@ -1,6 +1,6 @@
 # Terminal One Liners
 Triple click to copy/paste command.
-## Crouton
+## Install Ubuntu with Crouton
 `curl -o ~/Downloads/crouton https://raw.githubusercontent.com/dnschneid/crouton/master/installer/crouton; sudo sh ~/Downloads/crouton -t xiwi,touch,extension,cli-extra,audio -n ubuntu`
 ## Merge SWORD Modules
 `awk '/^\$\$\$/{k=$0;next}{g[k]=g[k]"\n"$0}END{for(k in g)print k g[k]}' file1 file2`
