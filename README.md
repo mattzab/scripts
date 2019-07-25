@@ -20,8 +20,18 @@ Triple click to copy/paste command.
 `wget -mkEpnp http://example.org`
 (Span Hosts Version)
 `wget -mkEpnpH http://example.org`
-## Convert .ts files to .mp4
+
+# File Conversion
+## TS to MP4
+`ffmpeg -i input.ts -c copy output.mp4`
+### All the TS files in this folder to MP4
+`for f in *.ts ; do (ffmpeg -i "$f" -c copy "$f.mp4"); done`
+### Recurse through directories 1 layer deep converting TS to MP4
 `for d in ./* ; do (cd "$d"; for f in ./* ; do (ffmpeg -i "$f" -c copy "$f.mp4"); done; rm *.ts; rename 's/.ts//' *); done`
+## MKV to MP4
+`HandBrakeCLI -Z "Android 720p30" -s scan -F --subtitle-burned -N eng -i "$f" -o ~/work/"${f%.mkv}.mp4"`
+## Convert .mkv files to .mp4 and upload with rclone
+`for f in *.mkv; do rclone copy "$f" ~/work -P; HandBrakeCLI -Z "Android 720p30" -s scan -F --subtitle-burned -N eng -i "$f" -o ~/work/"${f%.mkv}.mp4"; rm ~/work/*.mkv; rclone move ~/work plex:Transcoded -P; done`
 
 
 
