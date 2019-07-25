@@ -1,4 +1,4 @@
-# Terminal One Liners
+# Linux Terminal Cheat Sheet
 Triple click to copy/paste command.
 ## Install Ubuntu with Crouton
 `curl -o ~/Downloads/crouton https://raw.githubusercontent.com/dnschneid/crouton/master/installer/crouton; sudo sh ~/Downloads/crouton -t xiwi,touch,extension,cli-extra,audio -n ubuntu`
