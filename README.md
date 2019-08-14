@@ -20,6 +20,8 @@ Triple click to copy/paste command.
 `wget -mkEpnp http://example.org`
 (Span Hosts Version)
 `wget -mkEpnpH http://example.org`
+## Start Command in tmux
+`/usr/bin/tmux send-keys -t name "/usr/bin/command --arguments" C-m`
 
 # FILE CONVERSION
 ## TS to MP4
