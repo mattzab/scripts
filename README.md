@@ -35,6 +35,20 @@ Triple click to copy/paste command.
 ### Convert .mkv files to .mp4 and upload with rclone
 `for f in *.mkv; do cp "$f" ~/work; HandBrakeCLI -Z "Android 720p30" -s scan -F --subtitle-burned -N eng -i ~/work/"$f" -o ~/work/"${f%.mkv}.mp4"; rm ~/work/"$f"; rclone move ~/work plex:Transcoded -P; done`
 
+# SED
+## Delete up to line
+sed '2,4d' file
+
+## Delete line by filter
+sed '${/ubuntu/d;}' file
+
+## Delete from filter to end
+sed '${/ubuntu/$d;}' file
+
+# Syntax
+## Cut off part of a file name
+mv $f "${f%.*}.mp4"
+
 
 
 
