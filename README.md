@@ -43,7 +43,7 @@ sed '2,4d' file
 sed '${/ubuntu/d;}' file
 
 ## Delete from filter to end
-sed '${/ubuntu/$d;}' file
+sed '/fedora/,$d' file
 
 # Syntax
 ## Cut off part of a file name
