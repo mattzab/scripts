@@ -39,6 +39,8 @@ Triple click to copy/paste command.
 ## Delete up to line
 sed '2,4d' file
 
+ls * | tac | while read f; do echo "$f"; done
+
 ## Delete line by filter
 sed '${/ubuntu/d;}' file
 
