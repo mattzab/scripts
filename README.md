@@ -43,7 +43,7 @@ tac a.txt > b.txt
 
 ls * | tac | while read f; do echo "$f"; done
 
-grep -rnw '/path/to/somewhere/' -e 'pattern'
+grep -rnwl '/path/to/somewhere/' -e 'pattern'
 
 ## Delete line by filter
 sed '${/ubuntu/d;}' file
