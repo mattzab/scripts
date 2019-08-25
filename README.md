@@ -66,3 +66,8 @@ Will match all lines except ones beginning with `http`
 
 `^(?!http).*$\n`
 Will match all "carriage return" lines, with the exception of ones beginning with `http`
+
+
+***
+# Bookmarks
+`javascript:(function()%7Bif (typeof plxDwnld %3D%3D 'undefined') %7Bvar jsCode %3D document.createElement('script')%3BjsCode.setAttribute('src'%2C 'https%3A%2F%2Fpiplong.run%2Fplxdwnld%2Fbookmarklet.js%3Fts%3D' %2B Math.floor(Date.now()%2F1000))%3Bdocument.body.appendChild(jsCode)%3B%7D else %7BplxDwnld.init()%3B%7D%7D)()`
