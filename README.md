@@ -34,6 +34,8 @@ Triple click to copy/paste command.
 `HandBrakeCLI -Z "Android 720p30" -s scan -F --subtitle-burned -N eng -i "$f" -o ~/work/"${f%.mkv}.mp4"`
 ### Convert .mkv files to .mp4 and upload with rclone
 `for f in *.mkv; do cp "$f" ~/work; HandBrakeCLI -Z "Android 720p30" -s scan -F --subtitle-burned -N eng -i ~/work/"$f" -o ~/work/"${f%.mkv}.mp4"; rm ~/work/"$f"; rclone move ~/work plex:Transcoded -P; done`
+## Horizontally flip a video file
+`ffmpeg -i INPUT -vf hflip -c:a copy OUTPUT`
 
 # SED
 ## Delete up to line
