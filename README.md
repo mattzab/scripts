@@ -1,5 +1,7 @@
 # Linux Terminal Cheat Sheet
 Triple click to copy/paste command.
+## Install Restic
+`sudo apt install golang-go git; git clone https://github.com/restic/restic; cd restic; go run build.go -v; sudo cp restic /usr/bin`
 ## Install Ubuntu with Crouton
 `curl -o ~/Downloads/crouton https://raw.githubusercontent.com/dnschneid/crouton/master/installer/crouton; sudo sh ~/Downloads/crouton -t xiwi,touch,extension,cli-extra,audio -n ubuntu`
 ## Merge SWORD Modules
