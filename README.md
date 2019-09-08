@@ -1,21 +1,33 @@
 # Linux Terminal Cheat Sheet
 Triple click to copy/paste command.
-## Install Restic
+
+# Install
+## Restic
 `sudo apt install golang-go git -y; git clone https://github.com/restic/restic; cd restic; go run build.go -v; sudo mv restic /usr/bin; cd ..; sudo rm -rf restic/`
-## Install Ubuntu with Crouton
-`curl -o ~/Downloads/crouton https://raw.githubusercontent.com/dnschneid/crouton/master/installer/crouton; sudo sh ~/Downloads/crouton -t xiwi,touch,extension,cli-extra,audio -n ubuntu`
+## Ubuntu Chroot in Chromebook using Crouton
+`curl -o ~/Downloads/crouton https://raw.githubusercontent.com/dnschneid/crouton/master/installer/crouton`
+`sudo sh ~/Downloads/crouton -t xiwi,touch,extension,cli-extra,audio -n ubuntu`
+## Rclone
+`curl https://rclone.org/install.sh | sudo bash`
+## Pi-Hole
+`curl -sSL https://install.pi-hole.net | bash`
+## Aptik
+## TimeShift
+## mkUSB
+```bash
+sudo add-apt-repository ppa:mkusb/ppa  # and press Enter
+sudo apt-get update
+sudo apt-get install mkusb mkusb-nox usb-pack-efi
+```
+
+
 ## Merge SWORD Modules
 `awk '/^\$\$\$/{k=$0;next}{g[k]=g[k]"\n"$0}END{for(k in g)print k g[k]}' file1 file2`
-## Install Rclone
-`curl https://rclone.org/install.sh | sudo bash`
-## Install Pi-Hole
-`curl -sSL https://install.pi-hole.net | bash`
+
 ## CD to ISO
 `(pv -n /dev/cdrom | dd of="$HOME/Desktop/CDROM.iso" bs=128M conv=notrunc,noerror) 2>&1 | dialog --gauge "Running dd if=/dev/cdrom of=$HOME/Desktop/CDROM.iso, please wait..." 10 70 0`
 ## Copy Folder to Drive
 `curl https://raw.githubusercontent.com/mattzab/scripts/master/bash/Copy-Folder-To-Drive.sh | bash`
-## Install Wordpress
-`curl https://raw.githubusercontent.com/mattzab/scripts/master/bash/Install-Wordpress.sh | bash`
 ## Move Files To Directory Above
 `for d in ./*/ ; do (cd "$d" && mv * ..); done`
 ## Mirror Website
