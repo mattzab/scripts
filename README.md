@@ -5,20 +5,51 @@ Triple click to copy/paste command.
 ## Restic
 `sudo apt install golang-go git -y; git clone https://github.com/restic/restic; cd restic; go run build.go -v; sudo mv restic /usr/bin; cd ..; sudo rm -rf restic/`
 ## Ubuntu Chroot in Chromebook using Crouton
-`curl -o ~/Downloads/crouton https://raw.githubusercontent.com/dnschneid/crouton/master/installer/crouton`
-`sudo sh ~/Downloads/crouton -t xiwi,touch,extension,cli-extra,audio -n ubuntu`
+```
+curl -o ~/Downloads/crouton https://raw.githubusercontent.com/dnschneid/crouton/master/installer/crouton
+sudo sh ~/Downloads/crouton -t xiwi,touch,extension,cli-extra,audio -n ubuntu
+```
 ## Rclone
 `curl https://rclone.org/install.sh | sudo bash`
+## youtube-dl
+```
+sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
+sudo chmod a+rx /usr/local/bin/youtube-dl
+```
 ## Pi-Hole
 `curl -sSL https://install.pi-hole.net | bash`
 ## Aptik
+```
+sudo add-apt-repository -y ppa:teejee2008/ppa
+sudo apt-get install aptik aptik-gtk
+```
 ## TimeShift
+```
+sudo add-apt-repository -y ppa:teejee2008/ppa
+sudo apt-get install timeshift
+```
 ## mkUSB
 ```bash
 sudo add-apt-repository ppa:mkusb/ppa  # and press Enter
-sudo apt-get update
 sudo apt-get install mkusb mkusb-nox usb-pack-efi
 ```
+
+## youtube-dl usage examples & explanations
+### Download a video or playlist (URL to individual video or playlist)
+`youtube-dl -f best -vic -o '%(title)s.%(ext)s' URL`
+
+`-f best` passes flag to request Format: Best.
+
+`-v` Verbose, `-i` Ignore Errors, `-c` Continue partial downloads 
+
+`-o '%(title)s.%(ext)s` Output to a file, with the Name of the video, and the file extension
+### Download a list of videos from a file
+`youtube-dl -f best -vic -o '%(title)s.%(ext)s' -a list.txt`
+`-a list.txt` will read list.txt line by line and download each video
+### Download a list of playlists
+`while read url; do 
+
+
 
 
 ## Merge SWORD Modules
