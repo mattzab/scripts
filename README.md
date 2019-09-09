@@ -47,7 +47,9 @@ sudo apt-get install mkusb mkusb-nox usb-pack-efi
 `youtube-dl -f best -vic -o '%(title)s.%(ext)s' -a list.txt`
 `-a list.txt` will read list.txt line by line and download each video
 ### Download a list of playlists
-`while read url; do 
+`while read url; do youtube-dl -f best -vic -o '%(title)s.%(ext)s' $url; done <playlists.txt`
+This uses a `while` loop to read each line from the file `playlists.txt`, and assigns each line the variable called `url`.
+It then passes the playlist url to the end of the youtube-dl command with the variable `$url`. This repeats until it is done. `<` is passing `playlists.txt` as input to the previous command, similar to how `>` passes a command's output to a file.
 
 
 
