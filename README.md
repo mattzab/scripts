@@ -111,6 +111,9 @@ mv $f "${f%.*}.mp4"
 Paste
 `Acquire::Languages "none";`
 Into a new file called `/etc/apt/apt.conf.d/99translations`
+## Move Live User's Home Folder to a new name
+Log in as a new admin user,
+`usermod -m -d /home/new user`
 
 
 
