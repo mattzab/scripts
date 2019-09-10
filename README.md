@@ -105,6 +105,13 @@ sed '/fedora/,$d' file
 mv $f "${f%.*}.mp4"
 
 
+***
+# System Maintenance
+## Remove Apt Translation Hits
+Paste
+`Acquire::Languages "none";`
+Into a new file called `/etc/apt/apt.conf.d/99translations`
+
 
 
 ***
