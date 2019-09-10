@@ -30,8 +30,8 @@ sudo apt-get install timeshift
 ```
 ## mkUSB
 ```bash
-sudo add-apt-repository ppa:mkusb/ppa  # and press Enter
-sudo apt-get install mkusb mkusb-nox usb-pack-efi
+sudo add-apt-repository ppa:mkusb/ppa
+sudo apt install mkusb mkusb-nox usb-pack-efi
 ```
 
 ## youtube-dl usage examples & explanations
