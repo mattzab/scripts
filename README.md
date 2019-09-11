@@ -114,6 +114,10 @@ Into a new file called `/etc/apt/apt.conf.d/99translations`
 ## Move Live User's Home Folder to a new name
 Log in as a new admin user,
 `usermod -m -d /home/new user`
+## Disable all logging (Save USB Drive from wear & tear)
+`service rsyslog stop`
+
+`systemctl disable rsyslog`
 
 
 
