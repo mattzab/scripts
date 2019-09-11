@@ -1,5 +1,7 @@
 # Linux Terminal Cheat Sheet
 Triple click to copy/paste command.
+# CONTENTS
+### [Install Stuff](#Install)
 
 # Install
 ## Restic
