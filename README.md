@@ -2,6 +2,10 @@
 Triple click to copy/paste command.
 # CONTENTS
 ### [Install Stuff](#install)
+### [Use youtube-dl](#youtube-dl-usage-examples--explanations)
+### [File Converstion](#file-conversion)
+### [Text Manipulation](#text-manipulation)
+### [System Maintenance](#system-maintenance)
 
 # Install
 ## Restic
@@ -85,7 +89,8 @@ It then passes the playlist url to the end of the youtube-dl command with the va
 `for f in *.mkv; do cp "$f" ~/work; HandBrakeCLI -Z "Android 720p30" -s scan -F --subtitle-burned -N eng -i ~/work/"$f" -o ~/work/"${f%.mkv}.mp4"; rm ~/work/"$f"; rclone move ~/work plex:Transcoded -P; done`
 ## Horizontally flip a video file
 `ffmpeg -i INPUT -vf hflip -c:a copy OUTPUT`
-
+***
+# Text Manipulation
 # SED
 ## Delete up to line
 sed '2,4d' file
