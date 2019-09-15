@@ -4,8 +4,8 @@ Triple click to copy/paste command.
 ### [Install Stuff](#install)
 ### [Use youtube-dl](#youtube-dl-usage-examples--explanations)
 ### [File Converstion](#file-conversion)
-### [Text Manipulation](#text-manipulation)
-### [System Maintenance](#system-maintenance)
+### [Text Manipulation](#text-manipulation-1)
+### [System Maintenance](#system-maintenance-1)
 
 # Install
 ## Restic
@@ -90,30 +90,33 @@ It then passes the playlist url to the end of the youtube-dl command with the va
 ## Horizontally flip a video file
 `ffmpeg -i INPUT -vf hflip -c:a copy OUTPUT`
 ***
-# Text Manipulation
-# SED
+# TEXT MANIPULATION
 ## Delete up to line
 sed '2,4d' file
+## Delete empty lines in a file
+`sed  '/^$/d'`
+## Reverse all lines of a file
+`tac a.txt > b.txt`
 
-tac a.txt > b.txt
+## Reverse list of files in a folder
+`ls * | tac | while read f; do echo "$f"; done`
 
-ls * | tac | while read f; do echo "$f"; done
-
-grep -rnwl '/path/to/somewhere/' -e 'pattern'
+## Search for file containing contents
+`grep -rnwl '/path/to/somewhere/' -e 'pattern'`
 
 ## Delete line by filter
-sed '${/ubuntu/d;}' file
+`sed '${/filter/d;}' file`
 
 ## Delete from filter to end
-sed '/fedora/,$d' file
+`sed '/filter/,$d' file`
 
 # Syntax
 ## Cut off part of a file name
-mv $f "${f%.*}.mp4"
+`mv $f "${f%.*}.mp4"`
 
 
 ***
-# System Maintenance
+# SYSTEM MAINTENANCE
 ## Remove Apt Translation Hits
 Paste
 `Acquire::Languages "none";`
