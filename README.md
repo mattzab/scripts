@@ -113,6 +113,8 @@ sed '2,4d' file
 # Syntax
 ## Cut off part of a file name
 `mv $f "${f%.*}.mp4"`
+## Rename images with random trailing numbers
+`for f in *.jpg; do mv $f "${f%.jpg}-$RANDOM.jpg"; done`
 
 
 ***
