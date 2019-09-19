@@ -1,4 +1,4 @@
-# Linux Terminal Cheat Sheet
+# Linux Terminal & Other Scripts Cheat Sheet
 Triple click to copy/paste command.
 # CONTENTS
 ### [Install Stuff](#install)
