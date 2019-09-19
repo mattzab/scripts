@@ -6,7 +6,7 @@ Triple click to copy/paste command.
 ### [File Converstion](#file-conversion)
 ### [Text Manipulation](#text-manipulation-1)
 ### [System Maintenance](#system-maintenance-1)
-### [Bookmarklets](#bookmarklets-1)
+### [Browser Bookmarklets](#bookmarklets)
 
 # Install
 ## Restic
