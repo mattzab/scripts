@@ -6,6 +6,7 @@ Triple click to copy/paste command.
 ### [File Converstion](#file-conversion)
 ### [Text Manipulation](#text-manipulation-1)
 ### [System Maintenance](#system-maintenance-1)
+### [Bookmarklets](#bookmarklets-1)
 
 # Install
 ## Restic
@@ -149,7 +150,7 @@ Will match all "carriage return" lines, with the exception of ones beginning wit
 `javascript:(function()%7Bif (typeof plxDwnld %3D%3D 'undefined') %7Bvar jsCode %3D document.createElement('script')%3BjsCode.setAttribute('src'%2C 'https%3A%2F%2Fpiplong.run%2Fplxdwnld%2Fbookmarklet.js%3Fts%3D' %2B Math.floor(Date.now()%2F1000))%3Bdocument.body.appendChild(jsCode)%3B%7D else %7BplxDwnld.init()%3B%7D%7D)()`
 
 ## Lazyload
-`javascript:(function(){function I(u){var t=u.split('.'),e=t[t.length-1].toLowerCase();return {gif:1,jpg:1,jpeg:1,png:1,mng:1}[e]}function hE(s){return s.replace(/&/g,'&amp;').replace(/>/g,'&gt;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}var q,h,i,z=open().document;z.write('<center>');for(i=0;q=document.links[i];++i){h=q.href;if(h&&I(h))z.write('<img src="'+hE(h)+'" width="85%" loading="lazy"><br><br>');}z.close();})()`
+`javascript:(function(){function I(u){var t=u.split('.'),e=t[t.length-1].toLowerCase();return {gif:1,jpg:1,jpeg:1,png:1,mng:1}[e]}function hE(s){return s.replace(/&/g,'&amp;').replace(/>/g,'&gt;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}var q,h,i,z=open().document;z.write('<center>');for(i=0;q=document.links[i];++i){h=q.href;if(h&&I(h))z.write('<img src="'+hE(h)+'" width="50%" loading="lazy"><br><br>');}z.close();})()`
 
 ## Expose Passwords
 `javascript:(function(){var s,F,j,f,i; s = ""; F = document.forms; for(j=0; j<F.length; ++j) { f = F[j]; for (i=0; i<f.length; ++i) { if (f[i].type.toLowerCase() == "password") s += f[i].value + "\n"; } } if (s) alert("Passwords in forms on this page:\n\n" + s); else alert("There are no passwords in forms on this page.");})();`
