@@ -7,6 +7,7 @@ Triple click to copy/paste command.
 ### [Text Manipulation](#text-manipulation-1)
 ### [System Maintenance](#system-maintenance-1)
 ### [Browser Bookmarklets](#bookmarklets)
+### [Other Cool Stuff](#other-stuff)
 
 # Install
 ## Restic
@@ -161,3 +162,10 @@ Will match all "carriage return" lines, with the exception of ones beginning wit
 ## Enlarge Textareas
 `javascript:(function(){var i,x; for(i=0;x=document.getElementsByTagName("textarea")[i];++i) x.rows += 5; })()`
 
+***
+# Other Stuff
+## Make a Google Drive Mount
+`mkdir ~/rclone-folder ~/local-folder "~/Google Drive"`
+`rclone mount googledrive: /rclone-folder --vfs-cache-mode writes`
+`mergerfs -o rw,async_read=false,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=partial,dropcacheonclose=true ~/local-folder:~/rclone-folder "~/Google Drive"`
+`while :; do rclone move ~/local-folder googledrive: -P`
