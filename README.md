@@ -41,6 +41,8 @@ sudo apt-get install timeshift
 sudo add-apt-repository ppa:mkusb/ppa
 sudo apt install mkusb mkusb-nox usb-pack-efi
 ```
+## mergerfs
+`curl https://github.com/trapexit/mergerfs/releases/download/2.28.2/mergerfs_2.28.2.ubuntu-bionic_amd64.deb -o mergerfs.deb | sudo dpkg -i`
 
 ## youtube-dl usage examples & explanations
 ### Download a video or playlist (URL to individual video or playlist)
@@ -168,4 +170,4 @@ Will match all "carriage return" lines, with the exception of ones beginning wit
 `mkdir ~/rclone-folder ~/local-folder "~/Google Drive"`
 `rclone mount googledrive: /rclone-folder --vfs-cache-mode writes`
 `mergerfs -o rw,async_read=false,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=partial,dropcacheonclose=true ~/local-folder:~/rclone-folder "~/Google Drive"`
-`while :; do rclone move ~/local-folder googledrive: -P`
+`while :; do rclone move ~/local-folder googledrive: -P; sleep 1m; done`
