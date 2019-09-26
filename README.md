@@ -167,7 +167,7 @@ Will match all "carriage return" lines, with the exception of ones beginning wit
 ***
 # Other Stuff
 ## Make a Google Drive Mount
-### Run this script:
+### Run this interactive script:
 `curl https://raw.githubusercontent.com/mattzab/scripts/master/bash/google-drive.sh | bash`
 ### Or do it manually:
 `mkdir ~/rclone-folder ~/local-folder "~/Google Drive"`
