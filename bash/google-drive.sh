@@ -2,11 +2,11 @@ sleep 3
 echo "Run in tmux if you want to close this window!"
 echo " "
 sleep 3
-echo "What would you like your Google Drive folder to be called?
+echo "What would you like your Google Drive folder to be called?"
 read gdrivef
 sleep 3
 echo " "
-echo "Your Google Drive folder will be created at ~/$gdrivef"
+echo "Your Google Drive folder will be created at ~/'$gdrivef'"
 sleep 3
 echo " "
 echo "Which rclone remote would you like to use?"
