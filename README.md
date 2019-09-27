@@ -170,7 +170,9 @@ Will match all "carriage return" lines, with the exception of ones beginning wit
 ### Run this interactive script:
 `curl https://raw.githubusercontent.com/mattzab/scripts/master/bash/google-drive.sh | bash`
 ### Or do it manually:
-`mkdir ~/rclone-folder ~/local-folder "~/Google Drive"`
-`rclone mount googledrive: /rclone-folder --vfs-cache-mode writes`
-`mergerfs -o rw,async_read=false,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=partial,dropcacheonclose=true ~/local-folder:~/rclone-folder "~/Google Drive"`
-`while :; do rclone move ~/local-folder googledrive: -P; sleep 1m; done`
+```
+mkdir ~/rclone-folder ~/local-folder "~/Google Drive"
+rclone mount googledrive: /rclone-folder --vfs-cache-mode writes
+mergerfs -o rw,async_read=false,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=partial,dropcacheonclose=true ~/local-folder:~/rclone-folder "~/Google Drive"
+while :; do rclone move ~/local-folder googledrive: -P; sleep 1m; done
+```
