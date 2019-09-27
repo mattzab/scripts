@@ -172,7 +172,7 @@ Will match all "carriage return" lines, with the exception of ones beginning wit
 ### Or do it manually:
 ```
 mkdir ~/rclone-folder ~/local-folder "~/Google Drive"
-rclone mount googledrive: /rclone-folder --vfs-cache-mode writes
+rclone mount googledrive: ~/rclone-folder --allow-other --dir-cache-time 96h --timeout 1h --umask 000 --vfs-cache-mode writes
 mergerfs -o rw,async_read=false,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=partial,dropcacheonclose=true ~/local-folder:~/rclone-folder "~/Google Drive"
 while :; do rclone move ~/local-folder googledrive: -P; sleep 1m; done
 ```
