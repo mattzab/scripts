@@ -1,0 +1,712 @@
+//@version=4
+study(title="Forked Entry Interface", shorttitle="EEI(F)", overlay=true)
+takeprofit = 0.0
+// CHECKBOXES & INPUTS
+backtest = input(true, title="Backtest Mode")
+dots = input(false, title="Exit Dots")
+sizeOfLabels = input("Large", "Size of labels", options=["Small", "Normal", "Large"])
+var labelSize = sizeOfLabels == "Small" ? size.small : sizeOfLabels == "Large" ? size.large : size.normal
+showprice = input(true, title="🧮 Show TakeProfit / StopLoss Targets")
+uprdown = input("Below Bar", "Pip Calculator Location", options=["Above Bar", "Below Bar"])
+// var barlocation = uprdown == "Above Bar" ? 
+// showpips = input(false, title="Show Entry & Pips")
+showpips = false
+tips = input(true, title="🖩 Show Entry & Pip Calculator")
+showdollars = input(false, title="💲 Show Dollar Amount in Lables")
+plots = input(false, title="📈 Show Plots and Lines For Entries")
+
+green = input(true, title=" 💵💵💵 Green Entries 💵💵💵")
+green_risk = input(title="💵 Risk", type=input.float, defval=1, minval=0, step=0.05)
+green_reward = input(title="💵 Reward", type=input.float, defval=1, minval=0, step=0.05)
+green_slow_ema = input(defval=50, title="💵 EMA Line")
+
+blue = input(true, title=" 💶💶💶 Blue Entries 💶💶💶")
+blue_risk = input(title="💶 Risk", type=input.float, defval=1, minval=0, step=0.05)
+blue_reward = input(title="💶 Reward", type=input.float, defval=1, minval=0, step=0.05)
+blue_ema = input(defval=15, title="💶 EMA Line")
+blue_channel = input(defval=50, title="💶 EMA Channel")
+
+yellow = input(true, title=" 💴💴💴 Yellow Entries 💴💴💴")
+yellow_risk = input(title="💴 Risk", type=input.float, defval=1, minval=0, step=0.05)
+yellow_reward = input(title="💴 Reward", type=input.float, defval=1.2, minval=0, maxval=5, step=0.05)
+yellow_k_length = input(14, title="💴 Stochastic Length")
+yellow_smoothing = input(3, title="💴 Stochastic Smoothing")
+yellow_oversold = input(30, title="💴 Stochastic Oversold Level")
+yellow_length = input(150, title="💴 BB Length")
+yellow_deviation = input(3, title="💴 BB Standard Deviation")
+
+purple = input(true, title=" 💷💷💷 Purple Entries 💷💷💷")
+purple_risk = input(title="💷 Risk", type=input.float, defval=0.5, minval=0, step=0.05)
+purple_reward = input(title="💷 Reward", type=input.float, defval=2.5, minval=0, step=0.05)
+purple_rsi_oversold = input(30, title="💷 RSI Oversold Level")
+purple_stoch_oversold = input(20, title="💷 Stochastic Oversold Level")
+purple_k_length = input(14, title="💷 Stochastic Length")
+purple_smoothing = input(3, title="💷 Stochastic Smoothing")
+
+silver = input(true, title=" 💿💿💿 Silver Entries 💿💿💿")
+silver_risk = input(title="💿 Risk", type=input.float, defval=0.5, minval=0, step=0.05)
+silver_reward = input(title="💿 Reward", type=input.float, defval=1, minval=0, step=0.05)
+silver_rsi_oversold = input(30, title="💿 RSI Oversold Level")
+silver_stoch_oversold = input(20, title="💿 Stochastic Oversold Level")
+silver_useTrueRange = input(true, title="💿 Keltner True Range")
+silver_length = input(20, minval=1, title="💿 Keltner Length")
+silver_mult = input(1.0, title="💿 Keltner Mult")
+
+fuchsia = input(true, title=" 🌸🌸🌸 Fuchsia Entries 🌸🌸🌸")
+fuchsia_risk = input(title="🌸 Risk", type=input.float, defval=0.5, minval=0, step=0.05)
+fuchsia_reward = input(title="🌸 Reward", type=input.float, defval=2, minval=0, step=0.05)
+fuchsia_mfi_oversold = input(20, title="🌸 MFI Oversold Level")
+fuchsia_stoch_oversold = input(20, title="🌸 Stochastic Oversold Level")
+fuchsia_k_length = input(14, title="🌸 Stochastic Length")
+fuchsia_smoothing = input(3, title="🌸 Stochastic Smoothing")
+
+alligator = input(false, title="Show Alligator Lines")
+showsltp = backtest
+dollaramount = input(defval=3000, title="Account Dollar Amount")
+leverage = input(defval=20, title="Leverage Multiplier")
+
+// MULTIPLE USES
+
+// AVERAGE TRUE RANGE
+length = 14
+smoothing = "RMA"
+ma_function(source, length) => 
+    if smoothing == "RMA"
+        rma(source, length)
+    else
+        if smoothing == "SMA"
+            sma(source, length)
+        else
+            if smoothing == "EMA"
+                ema(source, length)
+            else
+                wma(source, length)
+atr = ma_function(tr(true), length)
+
+// ADJUST ATR
+adjatr = if atr < 0.0020
+    0.0010
+else
+    if atr >= 0.0020 and atr < 0.0030
+        0.0020
+    else
+        if atr >= 0.0030 and atr < 0.0050
+            0.0030
+        else
+            if atr >= 0.0050 and atr < 0.0075
+                0.0050
+            else
+                if atr >= 0.0075 and atr < 0.0100
+                    0.0075
+                else
+                    .0100
+
+// CALCULATE THE SWING LOW
+swinglow = min(low[1], low)
+
+// ALLIGATOR
+smma(src, length) =>
+    smma =  0.0
+    smma := na(smma[1]) ? sma(src, length) : (smma[1] * (length - 1) + src) / length
+    smma
+jawLength = 13
+teethLength = 8
+lipsLength = 5
+jawOffset = 8
+teethOffset = 5
+lipsOffset = 3
+jaw = smma(hl2, jawLength)
+teeth = smma(hl2, teethLength)
+lips = smma(hl2, lipsLength)
+plot(alligator?jaw:na, offset = jawOffset, color=#3BB3E4, linewidth=2, transp=0)
+plot(alligator?teeth:na, offset = teethOffset, color=#FF006E, linewidth=2, transp=0)
+plot(alligator?lips:na, offset = lipsOffset, color=#36C711, linewidth=2, transp=0)
+//Check Gaps
+lips_teeth_gap = lips - teeth
+teeth_jaw_gap = teeth - jaw
+//Confirm Trend
+gator_uptrend = 
+// Ensure entry candle has changed from red to green
+  lips_teeth_gap > 0.0002
+  and
+  teeth_jaw_gap > 0.0002
+
+
+
+
+
+//######################################################💵💵💵💵💵💵💵💵💵💵💵💵
+
+
+
+
+
+// RULES FOR GREEN ENTRY
+
+green_stoploss = (swinglow - adjatr * green_risk)
+green_takeprofit = close + (close - green_stoploss) * green_reward
+green_pips = (green_takeprofit-close)
+green_pct = (green_takeprofit-close)/close*100
+green_dollars = dollaramount * leverage * green_pct/100
+// DEFINE EMA 50
+green_50ema = ema(close, green_slow_ema)
+
+
+green_entry = green ? 
+// We are in an uptrend
+  gator_uptrend == 1
+// Current candle is the swing low from past 3 candles
+  and (low < min(low[1], low[2])
+// OR previous candle is the swing low of 3 most recent candles (Current plus -2)
+  or low[1] < min(low, low[2]))
+// Try to keep it under latest swing high (only goes out 7 days)
+  and high < highest(7)
+// Last 3 candles are above 50 EMA
+  and (close[1] > green_50ema or close[2] > green_50ema)
+// BEGIN Engulfing Pullback
+  and (
+// Last candle was red, this candle blue
+  (close > close[1])
+// Current candle is engulfing
+  and (close > open[1] and open <= close[1])
+  or
+// Yesterday closed below lips?
+  low[1] < lips[4]
+// Today closed above lips
+  and close > lips)
+  : na
+  
+  
+  
+   
+// EMA PLOTS
+plot(green?plots?green_50ema:na:na, color=color.green, linewidth=1, transp=0)
+
+
+
+green_funtp(src, _style, _yloc, _color, _size) =>
+    p2 = round(green_pips * 100000) / 10
+    if green_entry
+        label.new(bar_index[0], p2, (showpips ? "\n\n" + tostring(p2) + " Pips \n@ " + tostring(close) : na) + (showprice ? "\n\n\nTP " + tostring(round(green_takeprofit * 100000) / 100000) + "\nSL " + tostring(round(green_stoploss * 100000) / 100000) : na) + (showdollars ? "\n\n$" + tostring(round(green_dollars) / 1) : na), style=_style, yloc=_yloc, color=_color, size=_size)
+
+// GREEN PLOTS
+green_takeprofitlabel = green_funtp(green_takeprofit, label.style_triangleup, yloc.belowbar, color.green, labelSize)
+plotshape(green_entry==1?dots?green_takeprofit:na:na, color=color.green, location=location.absolute, style=shape.diamond, size=size.auto, title="Take Profit", transp=0)
+plotshape(green_entry==1?dots?green_stoploss:na:na, color=color.red, location=location.absolute, style=shape.diamond, size=size.auto, title="Stop Loss", transp=0)
+
+
+// BACK TESTING TP/SL LINES
+green_selltp = valuewhen(green_entry, green_takeprofit, 0)
+green_sellsl = valuewhen(green_entry, green_stoploss, 0)
+green_close_entry = valuewhen(green_entry, close, 0)
+green_newentry1 = barssince(green_entry) < barssince(high >= green_selltp)
+green_newentry2 = barssince(green_entry) < barssince(low <= green_sellsl)
+green_closeposition = high >= green_selltp or low <= green_sellsl
+green_tpline = plot(showsltp?green_newentry1?green_newentry2?green_selltp:na:na:na, color=color.green, style=plot.style_linebr, transp=0)
+green_slline = plot(showsltp?green_newentry1?green_newentry2?green_sellsl:na:na:na, color=color.red, style=plot.style_linebr, transp=0)
+green_entryline = plot(showsltp?green_newentry1?green_newentry2?green_close_entry:na:na:na, color=color.black, style=plot.style_linebr, transp=100)
+fill(green_tpline, green_entryline, color=color.green, transp=75)
+fill(green_entryline, green_slline, color=color.red, transp=75)
+
+
+
+
+
+
+
+//######################################################💶💶💶💶💶💶💶💶💶💶💶💶
+
+
+
+
+
+
+// BLUE ENTRY - CHANNEL
+
+blue_stoploss = (swinglow - adjatr * blue_risk)
+blue_takeprofit = close + (close - blue_stoploss) * blue_reward
+blue_pips = (blue_takeprofit-close)
+blue_pct = (blue_takeprofit-close)/close*100
+blue_dollars = dollaramount * leverage * blue_pct/100
+
+
+
+
+// MACD
+blue_macd = ema(close, 35) - ema(close, 70)
+blue_signal = ema(blue_macd, 12)
+
+
+// EMAs
+blue_top = ema(high, blue_channel)
+blue_bottom = ema(low, blue_channel)
+blue_line = ema(close, blue_ema)
+
+// PLOT EMA & CHANNEL
+blue_topline = plot(blue?plots?blue_top:na:na, color=color.blue, transp=100)
+blue_bottomline = plot(blue?plots?blue_bottom:na:na, color=color.blue, transp=100)
+plot(blue?plots?blue_line:na:na, color=color.blue, linewidth=1, transp=0)
+fill(blue_topline, blue_bottomline, color=color.blue, transp=80)
+
+//15 DAY LINE IS ABOVE CHANNEL
+blue_gap = blue_line - blue_top
+blue_height = high - blue_line
+
+
+// RULES FOR LONG ENTRY
+blue_entry = blue==1 ? 
+// MACD is positive
+  blue_macd > blue_signal
+// MACD is increasing
+  and blue_macd > blue_macd[1]
+// 15 EMA is above 50 EMA channel
+  and blue_gap >= 0.00050
+// Candle pierces below 15 EMA
+  and min(low, open) <= blue_line
+// Candle closes above 15 EMA
+  and close > blue_line
+// Candle isn't too tall
+  and blue_height <= 0.0030
+  and gator_uptrend == 1
+  : na
+
+// BLUE FUNCTIONS
+blue_funtp(src, _style, _yloc, _color, _size) =>
+    p2 = round(blue_pips * 100000) / 10
+    if blue_entry
+        label.new(bar_index[0], p2, (showpips ? "\n\n" + tostring(p2) + " Pips \n@ " + tostring(close) : na) + (showprice ? "\n\n\nTP " + tostring(round(blue_takeprofit * 100000) / 100000) + "\nSL " + tostring(round(blue_stoploss * 100000) / 100000) : na) + (showdollars ? "\n\n$" + tostring(round(blue_dollars) / 1) : na), style=_style, yloc=_yloc, color=_color, size=_size)
+
+// BLUE PLOTS
+blue_takeprofitlabel = blue_funtp(blue_takeprofit, label.style_triangleup, yloc.belowbar, color.blue, labelSize)
+plotshape(blue_entry==1?dots?blue_takeprofit:na:na, color=color.blue, location=location.absolute, style=shape.diamond, size=size.auto, title="Take Profit", transp=0)
+plotshape(blue_entry==1?dots?blue_stoploss:na:na, color=color.red, location=location.absolute, style=shape.diamond, size=size.auto, title="Take Profit", transp=0)
+
+// BACK TESTING TP/SL LINES
+blue_selltp = valuewhen(blue_entry, blue_takeprofit, 0)
+blue_sellsl = valuewhen(blue_entry, blue_stoploss, 0)
+blue_close_entry = valuewhen(blue_entry, close, 0)
+blue_newentry1 = barssince(blue_entry) < barssince(high >= blue_selltp)
+blue_newentry2 = barssince(blue_entry) < barssince(low <= blue_sellsl)
+blue_closeposition = high >= blue_selltp or low <= blue_sellsl
+blue_tpline = plot(showsltp?blue_newentry1?blue_newentry2?blue_selltp:na:na:na, color=color.blue, style=plot.style_linebr, transp=0)
+blue_slline = plot(showsltp?blue_newentry1?blue_newentry2?blue_sellsl:na:na:na, color=color.red, style=plot.style_linebr, transp=0)
+blue_entryline = plot(showsltp?blue_newentry1?blue_newentry2?blue_close_entry:na:na:na, color=color.black, style=plot.style_linebr, transp=100)
+fill(blue_tpline, blue_entryline, color=color.blue, transp=75)
+fill(blue_entryline, blue_slline, color=color.red, transp=75)
+
+
+
+
+//######################################################💴💴💴💴💴💴💴💴💴💴💴💴
+
+
+
+// YELLOW ENTRIES
+
+yellow_stoploss = (swinglow - adjatr * yellow_risk)
+yellow_takeprofit = close + (close - yellow_stoploss) * yellow_reward
+yellow_pips = (yellow_takeprofit-close)
+yellow_pct = (yellow_takeprofit-close)/close*100
+yellow_dollars = dollaramount * leverage * yellow_pct/100
+
+// STOCHASTIC
+yellow_k = sma(stoch(close, high, low, yellow_k_length), yellow_smoothing)
+
+// BOLLINGER BAND
+
+yellow_basis = sma(close, yellow_length)
+yellow_dev = yellow_deviation * stdev(close, yellow_length)
+yellow_upper = yellow_basis + yellow_dev
+yellow_lower = yellow_basis - yellow_dev
+
+yellow_p1 = plot(yellow?plots?yellow_upper:na:na, color=color.yellow, transp=0)
+yellow_p2 = plot(yellow?plots?yellow_lower:na:na, color=color.yellow, transp=0)
+fill(yellow_p1, yellow_p2, color=color.yellow)
+
+
+// RULES FOR LONG ENTRY
+yellow_entry = yellow ? 
+// Was yesterday's low below the BB?
+  lowest(low, 3) <= yellow_lower
+// Today's Close is above bottom of BB
+  and close > yellow_lower
+// Yesterday's Stochastic was below 20
+  and lowest(yellow_k, 3) < yellow_oversold
+// Today's Stochastic is greater than yesterday's
+  and yellow_k > yellow_k[1]
+  : na
+
+// yellow FUNCTIONS
+yellow_funtp(src, _style, _yloc, _color, _size) =>
+    p2 = round(yellow_pips * 100000) / 10
+    if yellow_entry
+        label.new(bar_index[0], p2, (showpips ? "\n\n" + tostring(p2) + " Pips \n@ " + tostring(close) : na) + (showprice ? "\n\n\nTP " + tostring(round(yellow_takeprofit * 100000) / 100000) + "\nSL " + tostring(round(yellow_stoploss * 100000) / 100000) : na) + (showdollars ? "\n\n$" + tostring(round(yellow_dollars) / 1) : na), style=_style, yloc=_yloc, color=_color, size=_size)
+
+// yellow PLOTS
+yellow_takeprofitlabel = yellow_funtp(yellow_takeprofit, label.style_triangleup, yloc.belowbar, color.yellow, labelSize)
+plotshape(yellow_entry==1?dots?yellow_takeprofit:na:na, color=color.yellow, location=location.absolute, style=shape.diamond, size=size.auto, title="Take Profit", transp=0)
+plotshape(yellow_entry==1?dots?yellow_stoploss:na:na, color=color.red, location=location.absolute, style=shape.diamond, size=size.auto, title="Take Profit", transp=0)
+
+// BACK TESTING TP/SL LINES
+yellow_selltp = valuewhen(yellow_entry, yellow_takeprofit, 0)
+yellow_sellsl = valuewhen(yellow_entry, yellow_stoploss, 0)
+yellow_close_entry = valuewhen(yellow_entry, close, 0)
+yellow_newentry1 = barssince(yellow_entry) < barssince(high >= yellow_selltp)
+yellow_newentry2 = barssince(yellow_entry) < barssince(low <= yellow_sellsl)
+yellow_closeposition = high >= yellow_selltp or low <= yellow_sellsl
+yellow_tpline = plot(showsltp?yellow_newentry1?yellow_newentry2?yellow_selltp:na:na:na, color=color.yellow, style=plot.style_linebr, transp=0)
+yellow_slline = plot(showsltp?yellow_newentry1?yellow_newentry2?yellow_sellsl:na:na:na, color=color.red, style=plot.style_linebr, transp=0)
+yellow_entryline = plot(showsltp?yellow_newentry1?yellow_newentry2?yellow_close_entry:na:na:na, color=color.black, style=plot.style_linebr, transp=100)
+fill(yellow_tpline, yellow_entryline, color=color.yellow, transp=75)
+fill(yellow_entryline, yellow_slline, color=color.red, transp=75)
+
+
+
+//######################################################💷💷💷💷💷💷💷💷💷💷💷💷
+
+
+
+// PURPLE ENTRIES 
+
+purple_stoploss = (swinglow - adjatr * purple_risk)
+purple_takeprofit = close + (close - purple_stoploss) * purple_reward
+purple_pips = (purple_takeprofit-close)
+purple_pct = (purple_takeprofit-close)/close*100
+purple_dollars = dollaramount * leverage * purple_pct/100
+
+purple_candle_half = (high + low)/2
+// RULES FOR LONG ENTRY
+
+// RSI
+rsi_up = rma(max(change(close), 0), 14)
+rsi_down = rma(-min(change(close), 0), 14)
+rsi = rsi_down == 0 ? 100 : rsi_up == 0 ? 0 : 100 - (100 / (1 + rsi_up / rsi_down))
+
+// STOCHASTIC
+purple_k = sma(stoch(close, high, low, purple_k_length), purple_smoothing)
+
+
+
+// purple_entry = purple ? na : na
+purple_entry = purple ? 
+// RSI is Oversold
+  rsi[1] < purple_rsi_oversold
+// Stochastic is Oversold
+  and purple_k[1] < purple_stoch_oversold
+// RSI or Stochastic has moved out of oversold territory
+  and (rsi > purple_rsi_oversold or purple_k > purple_stoch_oversold)
+// // Last 3 candles were red, this candle blue
+//   and (close > close[1] and close[1] < close[2] and close[2] < close[3] and close[3] < close[4])
+// Last 2 candles were red, this candle blue
+  and (close > close[1] and close[1] < close[2] and close[2] < close[3])
+// This candle body shorter than wicks
+  and (close - open > open - low and close - open > high - close)
+// This candle body is not 2X yesterday's candle body
+  and close - open < (open[1] - close[1]) * 2
+//   close > purple_candle_half
+// // Closed in the top half of the candle?
+//   and high < jaw
+//   and high < teeth
+//   and high < lips
+//   gator_uptrend[1] == 0 and gator_uptrend == 1
+//   and close > open
+//   and close > lips
+  : na
+
+// purple FUNCTIONS
+purple_funtp(src, _style, _yloc, _color, _size) =>
+    p2 = round(purple_pips * 100000) / 10
+    if purple_entry
+        label.new(bar_index[0], p2, (showpips ? "\n\n" + tostring(p2) + " Pips \n@ " + tostring(close) : na) + (showprice ? "\n\n\nTP " + tostring(round(purple_takeprofit * 100000) / 100000) + "\nSL " + tostring(round(purple_stoploss * 100000) / 100000) : na) + (showdollars ? "\n\n$" + tostring(round(purple_dollars) / 1) : na), style=_style, yloc=_yloc, color=_color, size=_size)
+
+// purple PLOTS
+purple_takeprofitlabel = purple_funtp(purple_takeprofit, label.style_triangleup, yloc.belowbar, color.purple, labelSize)
+plotshape(purple_entry==1?dots?purple_takeprofit:na:na, color=color.purple, location=location.absolute, style=shape.diamond, size=size.auto, title="Take Profit", transp=0)
+plotshape(purple_entry==1?dots?purple_stoploss:na:na, color=color.red, location=location.absolute, style=shape.diamond, size=size.auto, title="Take Profit", transp=0)
+
+// BACK TESTING TP/SL LINES
+purple_selltp = valuewhen(purple_entry, purple_takeprofit, 0)
+purple_sellsl = valuewhen(purple_entry, purple_stoploss, 0)
+purple_close_entry = valuewhen(purple_entry, close, 0)
+purple_newentry1 = barssince(purple_entry) < barssince(high >= purple_selltp)
+purple_newentry2 = barssince(purple_entry) < barssince(low <= purple_sellsl)
+purple_closeposition = high >= purple_selltp or low <= purple_sellsl
+purple_tpline = plot(showsltp?purple_newentry1?purple_newentry2?purple_selltp:na:na:na, color=color.purple, style=plot.style_linebr, transp=0)
+purple_slline = plot(showsltp?purple_newentry1?purple_newentry2?purple_sellsl:na:na:na, color=color.red, style=plot.style_linebr, transp=0)
+purple_entryline = plot(showsltp?purple_newentry1?purple_newentry2?purple_close_entry:na:na:na, color=color.black, style=plot.style_linebr, transp=100)
+fill(purple_tpline, purple_entryline, color=color.purple, transp=75)
+fill(purple_entryline, purple_slline, color=color.red, transp=75)
+
+
+
+
+
+//######################################################💿💿💿💿💿💿💿💿💿💿💿💿
+
+
+
+// SILVER ENTRIES
+
+silver_stoploss = (swinglow - adjatr * silver_risk)
+silver_takeprofit = close + (close - silver_stoploss) * silver_reward
+silver_pct = (silver_takeprofit-close)/close*100
+silver_dollars = dollaramount * leverage * silver_pct/100
+
+
+// PARABOLIC SAR
+psar_start = 0.02
+psar_increment = 0.02
+psar_maximum = 0.2
+psar_out = sar(psar_start, psar_increment, psar_maximum)
+plot(silver?plots?psar_out:na:na, style=plot.style_cross, color=color.silver)
+
+
+// KELTNER CHANNEL
+
+
+silver_ma = ema(close, silver_length)
+silver_range = silver_useTrueRange ? tr : high - low
+silver_rangema = ema(silver_range, silver_length)
+silver_upper = silver_ma + silver_rangema * silver_mult
+silver_lower = silver_ma - silver_rangema * silver_mult
+silver_c = color.silver
+silver_u = plot(silver?plots?silver_upper:na:na, color=silver_c, title="Upper")
+plot(silver?plots?silver_ma:na:na, color=color.black, title="Basis")
+silver_l = plot(silver?plots?silver_lower:na:na, color=silver_c, title="Lower")
+fill(silver_u, silver_l, color=silver_c)
+
+
+
+
+// RULES FOR LONG ENTRY
+silver_entry = silver ? 
+// Was yesterday's low below the BB?
+  close[1] <= silver_lower
+// Today's Close is above bottom of BB
+  and close > silver_lower
+// Parabolic Support Below Candle
+  and psar_out < open
+// Candle isn't too tall
+  and silver_upper - close >= 0.0001
+// One of the last 3 days Stochastic was oversold
+  and lowest(yellow_k, 3) < yellow_oversold
+// Today's Stochastic is greater than yesterday's
+  and yellow_k > yellow_k[1]
+  : na
+
+// silver FUNCTIONS
+silver_funtp(src, _style, _yloc, _color, _size) =>
+    if silver_entry
+        label.new(bar_index[0], close, (showprice ? "\n\n\nTP " + tostring(round(silver_takeprofit * 100000) / 100000) + "\nSL " + tostring(round(silver_stoploss * 100000) / 100000) : na) + (showdollars ? "\n\n$" + tostring(round(silver_dollars) / 1) : na), style=_style, yloc=_yloc, color=_color, size=_size)
+
+// silver PLOTS
+silver_takeprofitlabel = silver_funtp(silver_takeprofit, label.style_triangleup, yloc.belowbar, color.silver, labelSize)
+plotshape(silver_entry==1?dots?silver_takeprofit:na:na, color=color.silver, location=location.absolute, style=shape.diamond, size=size.auto, title="Take Profit", transp=0)
+plotshape(silver_entry==1?dots?silver_stoploss:na:na, color=color.red, location=location.absolute, style=shape.diamond, size=size.auto, title="Take Profit", transp=0)
+
+// BACK TESTING TP/SL LINES
+silver_selltp = valuewhen(silver_entry, silver_takeprofit, 0)
+silver_sellsl = valuewhen(silver_entry, silver_stoploss, 0)
+silver_close_entry = valuewhen(silver_entry, close, 0)
+silver_newentry1 = barssince(silver_entry) < barssince(high >= silver_selltp)
+silver_newentry2 = barssince(silver_entry) < barssince(low <= silver_sellsl)
+silver_closeposition = high >= silver_selltp or low <= silver_sellsl
+silver_tpline = plot(showsltp?silver_newentry1?silver_newentry2?silver_selltp:na:na:na, color=color.silver, style=plot.style_linebr, transp=0)
+silver_slline = plot(showsltp?silver_newentry1?silver_newentry2?silver_sellsl:na:na:na, color=color.red, style=plot.style_linebr, transp=0)
+silver_entryline = plot(showsltp?silver_newentry1?silver_newentry2?silver_close_entry:na:na:na, color=color.black, style=plot.style_linebr, transp=100)
+fill(silver_tpline, silver_entryline, color=color.silver, transp=75)
+fill(silver_entryline, silver_slline, color=color.red, transp=75)
+
+
+
+//######################################################🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸
+
+
+
+// FUCHSIA ENTRIES 
+
+fuchsia_stoploss = (swinglow - adjatr * fuchsia_risk)
+fuchsia_takeprofit = close + (close - fuchsia_stoploss) * fuchsia_reward
+fuchsia_pips = (fuchsia_takeprofit-close)
+fuchsia_pct = (fuchsia_takeprofit-close)/close*100
+fuchsia_dollars = dollaramount * leverage * fuchsia_pct/100
+
+fuchsia_candle_half = (high + low)/2
+
+
+// MONEY FLOW INDEX
+fuchsia_length = 14
+
+rawMoneyFlow = hlc3 * volume
+
+positiveMoneyFlow = 0.0
+positiveMoneyFlow := hlc3 > hlc3[1] ? positiveMoneyFlow + rawMoneyFlow : positiveMoneyFlow
+negativeMoneyFlow = 0.0
+negativeMoneyFlow :=  hlc3 < hlc3[1] ? negativeMoneyFlow + rawMoneyFlow : negativeMoneyFlow
+
+moneyFlowRatio = sma(positiveMoneyFlow, fuchsia_length) / sma(negativeMoneyFlow, fuchsia_length)
+
+moneyFlowIndex = 100 - 100 / (1 + moneyFlowRatio)
+
+// plot(moneyFlowIndex, color=yellow)
+// l1 = hline(80)
+// l2 = hline(20)
+// fill(l1, l2, color=green)
+
+
+// STOCHASTIC
+fuchsia_k = sma(stoch(close, high, low, fuchsia_k_length), fuchsia_smoothing)
+
+
+
+
+
+
+
+
+
+
+
+// RULES FOR LONG ENTRY
+
+
+// fuchsia_entry = fuchsia ? na : na
+fuchsia_entry = fuchsia ? 
+// RSI is Oversold
+  moneyFlowIndex[1] < fuchsia_mfi_oversold
+// Stochastic is Oversold
+  and fuchsia_k[1] < fuchsia_stoch_oversold
+// RSI or Stochastic has moved out of oversold territory
+  and (moneyFlowIndex > fuchsia_mfi_oversold or fuchsia_k > fuchsia_stoch_oversold)
+// // Last 3 candles were red, this candle blue
+//   and (close > close[1] and close[1] < close[2] and close[2] < close[3] and close[3] < close[4])
+//
+//
+// Last 2 candles were red, this candle blue
+//   and (close > close[1] and close[1] < close[2] and close[2] < close[3])
+// // This candle body shorter than wicks
+//   and (close - open > open - low and close - open > high - close)
+// // This candle body is not 2X yesterday's candle body
+//   and close - open < (open[1] - close[1]) * 2
+//
+//  
+//  
+//   close > fuchsia_candle_half
+// // Closed in the top half of the candle?
+//   and high < jaw
+//   and high < teeth
+//   and high < lips
+//   gator_uptrend[1] == 0 and gator_uptrend == 1
+//   and close > open
+//   and close > lips
+  : na
+
+// fuchsia FUNCTIONS
+fuchsia_funtp(src, _style, _yloc, _color, _size) =>
+    p2 = round(fuchsia_pips * 100000) / 10
+    if fuchsia_entry
+        label.new(bar_index[0], p2, (showpips ? "\n\n" + tostring(p2) + " Pips \n@ " + tostring(close) : na) + (showprice ? "\n\n\nTP " + tostring(round(fuchsia_takeprofit * 100000) / 100000) + "\nSL " + tostring(round(fuchsia_stoploss * 100000) / 100000) : na) + (showdollars ? "\n\n$" + tostring(round(fuchsia_dollars) / 1) : na), style=_style, yloc=_yloc, color=_color, size=_size)
+
+// fuchsia PLOTS
+fuchsia_takeprofitlabel = fuchsia_funtp(fuchsia_takeprofit, label.style_triangleup, yloc.belowbar, color.fuchsia, labelSize)
+plotshape(fuchsia_entry==1?dots?fuchsia_takeprofit:na:na, color=color.fuchsia, location=location.absolute, style=shape.diamond, size=size.auto, title="Take Profit", transp=0)
+plotshape(fuchsia_entry==1?dots?fuchsia_stoploss:na:na, color=color.red, location=location.absolute, style=shape.diamond, size=size.auto, title="Take Profit", transp=0)
+
+// BACK TESTING TP/SL LINES
+fuchsia_selltp = valuewhen(fuchsia_entry, fuchsia_takeprofit, 0)
+fuchsia_sellsl = valuewhen(fuchsia_entry, fuchsia_stoploss, 0)
+fuchsia_close_entry = valuewhen(fuchsia_entry, close, 0)
+fuchsia_newentry1 = barssince(fuchsia_entry) < barssince(high >= fuchsia_selltp)
+fuchsia_newentry2 = barssince(fuchsia_entry) < barssince(low <= fuchsia_sellsl)
+fuchsia_closeposition = high >= fuchsia_selltp or low <= fuchsia_sellsl
+fuchsia_tpline = plot(showsltp?fuchsia_newentry1?fuchsia_newentry2?fuchsia_selltp:na:na:na, color=color.fuchsia, style=plot.style_linebr, transp=0)
+fuchsia_slline = plot(showsltp?fuchsia_newentry1?fuchsia_newentry2?fuchsia_sellsl:na:na:na, color=color.red, style=plot.style_linebr, transp=0)
+fuchsia_entryline = plot(showsltp?fuchsia_newentry1?fuchsia_newentry2?fuchsia_close_entry:na:na:na, color=color.black, style=plot.style_linebr, transp=100)
+fill(fuchsia_tpline, fuchsia_entryline, color=color.fuchsia, transp=75)
+fill(fuchsia_entryline, fuchsia_slline, color=color.red, transp=75)
+
+
+
+
+
+
+
+
+
+// PIP CALCULATOR
+
+// STOP LOSS & TAKE PROFIT
+auto_stoploss = if silver_entry[1] == 1
+    silver_stoploss[1]
+else
+    if purple_entry[1] == 1
+        purple_stoploss[1]
+    else
+        if fuchsia_entry[1] == 1
+            fuchsia_stoploss[1]
+        else
+            if yellow_entry[1] == 1
+                yellow_stoploss[1]
+            else
+                if blue_entry[1] == 1
+                    blue_stoploss[1]
+                else
+                    if green_entry[1] == 1
+                        green_stoploss[1]
+                    else
+                        green_stoploss[1]
+                    
+auto_takeprofit = if silver_entry[1] == 1
+    silver_takeprofit[1]
+else
+    if purple_entry[1] == 1
+        purple_takeprofit[1]
+    else
+        if fuchsia_entry[1] == 1
+            fuchsia_takeprofit[1]
+        else
+            if yellow_entry[1] == 1
+                yellow_takeprofit[1]
+            else
+                if blue_entry[1] == 1
+                    blue_takeprofit[1]
+                else
+                    if green_entry[1] == 1
+                        green_takeprofit[1]
+                    else
+                        green_takeprofit[1]
+
+
+// pips_up = auto_takeprofit - close
+// plotshape(tips==1?close:na, color=#add1ff, textcolor=color.black, text="Making Higher Highs? \n\n Three Leg Movement?    \n\nTwo Candle Pullback?\n\nNear 21 EMA? \n\nSwing low looks right? \n\n Not creating new Swing High?", 
+//   textcolor=color.black,
+//   style=shape.labeldown,
+//   location=location.top, transp=0, offset=20, show_last=1)
+   
+// pipcalc_funtp(src, _style, _yloc, _color, _size) =>
+//     pips_up = round(auto_takeprofit * 100000) / 10
+//     if fuchsia_entry
+//         label.new(bar_index[0], p1, (tips ? "\n\n" + tostring(p1) + " Pips \n@ " + tostring(close) : na) + (showprice ? "\n\n\nTP " + tostring(round(fuchsia_takeprofit * 100000) / 100000) + "\nSL " + tostring(round(fuchsia_stoploss * 100000) / 100000) : na) + (showdollars ? "\n\n$" + tostring(round(fuchsia_dollars) / 1) : na), style=_style, yloc=_yloc, color=_color, size=_size)
+
+pips_up = round((auto_takeprofit - close) * 100000) / 10
+pips_up_previous = round((auto_takeprofit - close[1]) * 100000) / 10
+pips_down = round((close - auto_stoploss) * 100000) / 10
+pips_down_previous = round((close[1] - auto_stoploss) * 100000) / 10
+
+previous_arrow = blue_entry[1] == 1  or green_entry[1] == 1 or yellow_entry[1] == 1 or purple_entry[1] == 1 or silver_entry[1] == 1 or fuchsia_entry[1] == 1
+
+entry_needed = close > close[1] ? true : false
+
+if barstate.islast
+    pip_calculator = tips ? previous_arrow ? label.new(bar_index[0], close, "\n\n" + (entry_needed ? "Entry: " + tostring(close[1]) + "\nTP: " + tostring(pips_up_previous) + " Pips" + "\nSL: " + tostring(pips_down_previous) + " Pips\n\n" : "\nTP: " + tostring(pips_up) + " Pips" + "\nSL: " + tostring(pips_down) + " Pips\n\n"), style=label.style_labeldown, color=color.lime, size=size.large) : na : na
+
+
+
+//########################################
+
+// ALERTS
+longopportunity = blue_entry == 1  or green_entry == 1 or yellow_entry == 1 or purple_entry == 1 or silver_entry == 1 or fuchsia_entry == 1
+alertcondition(longopportunity, title='Entry Arrow', message = '')
+
+
+
