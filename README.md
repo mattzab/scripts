@@ -1,6 +1,7 @@
 # Linux Terminal & Other Scripts Cheat Sheet
 Triple click to copy/paste command.
 # CONTENTS
+### [Start The Party Code](#start-the-party-code)
 ### [Install Stuff](#install)
 ### [Use youtube-dl](#youtube-dl-usage-examples--explanations)
 ### [File Converstion](#file-conversion)
@@ -8,6 +9,13 @@ Triple click to copy/paste command.
 ### [System Maintenance](#system-maintenance-1)
 ### [Browser Bookmarklets](#bookmarklets)
 ### [Other Cool Stuff](#other-stuff)
+
+# Start The Party Code
+Right after a clean install
+
+## The One Liner
+`sudo echo 'Acquire::Languages "none";' > /etc/apt/apt.conf.d/99translations; sudo apt update; sudo apt purge geary libreoffice-* -y; sudo ubuntu-drivers autoinstall; sudo apt install tmux neofetch wget curl git python pv testdisk gddrescue htop gedit nano nemo ffmpeg; curl https://rclone.org/install.sh | sudo bash; sudo apt upgrade -y; sudo apt autoremove; sudo apt autoclean; exit`
+
 
 # Install
 ## Restic
