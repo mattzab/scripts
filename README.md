@@ -101,6 +101,8 @@ It then passes the playlist url to the end of the youtube-dl command with the va
 `for f in *.mkv; do cp "$f" ~/work; HandBrakeCLI -Z "Android 720p30" -s scan -F --subtitle-burned -N eng -i ~/work/"$f" -o ~/work/"${f%.mkv}.mp4"; rm ~/work/"$f"; rclone move ~/work plex:Transcoded -P; done`
 ## Horizontally flip a video file
 `ffmpeg -i INPUT -vf hflip -c:a copy OUTPUT`
+## Rip VHS Tape to MP4
+`ffmpeg -f v4l2 -video_size 720x480 -i /dev/video2 -channel_layout stereo -f alsa -i hw:1 -c:v libx264 -pix_fmt yuv420p -b:v 2M -crf 23 -c:a mp3 -b:a 256K -to 07:05:00 -preset fast "tape.mp4"`
 ***
 # TEXT MANIPULATION
 ## Delete up to line
