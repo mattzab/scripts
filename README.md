@@ -176,6 +176,16 @@ Will match all "carriage return" lines, with the exception of ones beginning wit
 
 ***
 # Other Stuff
+## Random String
+```
+arr[0]="2 million"
+arr[1]="1 million"
+arr[2]="3 million"
+
+rand=$[ $RANDOM % 3 ]
+echo ${arr[$rand]}
+```
+
 ## Make a Google Drive Mount
 ### Run this interactive script:
 `curl https://raw.githubusercontent.com/mattzab/scripts/master/bash/google-drive.sh | bash`
