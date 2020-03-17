@@ -124,6 +124,9 @@ sed '2,4d' file
 ## Delete from filter to end
 `sed '/filter/,$d' file`
 
+## Use Sed / Grep to extract URLs from webpages
+`p=1; while [ $p -lt 265 ]; do curl http://URL.com/page/$p/ | sed '1,257d' | sed '/<\/ul>/,$d' | grep "<a" | sed s/.*'<a href="'/''/ | sed s@'".*'@''@ >> output.file; let "p=$p+1"; echo $p; done`
+
 # Syntax
 ## Cut off part of a file name
 `mv $f "${f%.*}.mp4"`
