@@ -106,7 +106,7 @@ It then passes the playlist url to the end of the youtube-dl command with the va
 ***
 # TEXT MANIPULATION
 ## Delete up to line
-sed '2,4d' file
+`sed '2,4d' file`
 ## Delete empty lines in a file
 `sed  '/^$/d'`
 ## Reverse all lines of a file
