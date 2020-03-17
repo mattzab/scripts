@@ -128,7 +128,7 @@ It then passes the playlist url to the end of the youtube-dl command with the va
 `p=1; while [ $p -lt 265 ]; do curl http://URL.com/page/$p/ | sed '1,257d' | sed '/<\/ul>/,$d' | grep "<a" | sed s/.*'<a href="'/''/ | sed s@'".*'@''@ >> output.file; let "p=$p+1"; echo $p; done`
 
 ## Sed / Grep extract images
-`while read b; do while read a; do wget "$a"; done < curl "$b" | sed '1,316d' | sed '/<!-- tags/,$d' | grep "<a" | sed s/.*"<a href='"/""/ | sed s@"'.*"@""@; done < list`
+`while read a; do curl "$a" | sed '1,316d' | sed '/<!-- tags/,$d' | grep "<a" | sed s/.*"<a href='"/""/ | sed s@"'.*"@""@ | while read b; do wget "$b"; done; done<list`
 
 # Syntax
 ## Cut off part of a file name
