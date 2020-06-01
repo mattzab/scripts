@@ -18,6 +18,13 @@ Right after a clean install
 
 
 # Install
+## Gentoo Prefix
+```
+sudo apt install wget build-essential
+wget https://is.gd/litena
+chmod +x bootstrap-prefix.sh 
+./bootstrap-prefix.sh 
+```
 ## Restic
 `sudo apt install golang-go git -y; git clone https://github.com/restic/restic; cd restic; go run build.go -v; sudo mv restic /usr/bin; cd ..; sudo rm -rf restic/`
 ## Ubuntu Chroot in Chromebook using Crouton
