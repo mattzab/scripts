@@ -1,0 +1,7 @@
+#!/bin/bash
+
+curl -L https://raw.githubusercontent.com/mattzab/scripts/master/bin/tra/tra > /usr/bin/tra
+chmod +x /usr/bin/tra
+echo ""
+echo ""
+echo "Now run the command tra and click any window. Then ooh and ahh and text me about what you think, Jimmy. :)"
